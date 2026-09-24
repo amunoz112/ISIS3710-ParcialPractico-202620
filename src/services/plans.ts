@@ -1,6 +1,16 @@
 // La URL del back se configura en el archivo .env
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+type Plan1 = {
+    name: string;
+    description: string;
+    estimatedPrice: number;
+    estimatedTime: string;
+    recomendations: string;
+    address: string;
+    image: string;
+    userId: string;
+}
 // Así viene cada plan en la lista que manda el back
 export type PlanSummary = {
   id: string;
@@ -31,6 +41,20 @@ export type Plan = {
     name: string;
   };
 };
+
+export async function crearPlan(plan:Plan1): Promise<PlanSummary> {
+  const response = await fetch(`${API_URL}/planes`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(plan),
+  });
+
+  if (!response.ok) {
+    throw new Error("No se pudo crear el plan");
+  }
+
+  return response.json();
+}
 
 // Pide al back la lista de todos los planes
 export async function getPlans(): Promise<PlanSummary[]> {

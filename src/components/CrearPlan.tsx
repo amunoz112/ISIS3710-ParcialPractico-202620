@@ -2,6 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { crearPlan } from "@/services/plans";
 
 type Plan = {
     name: string;
@@ -39,29 +40,31 @@ export default function CreatePlanForm({ postToEdit }: CreatePlanFormProps) {
     }));
 
   }
+async function handleSubmit(
+  e: React.FormEvent<HTMLFormElement>
+) {
+  e.preventDefault();
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-
-
-    try {
-        const planToSubmit = {
-        name: planData.name,
-        description: planData.description,
-        estimatedPrice: planData.estimatedPrice,
-        estimatedTime: planData.estimatedTime,
-        recomendations: planData.recomendations,
-        address: planData.address,
-        image: planData.image,
-        userId: planData.userId,
+  try {
+    const planToSubmit = {
+      name: planData.name,
+      description: planData.description,
+      estimatedPrice: planData.estimatedPrice,
+      estimatedTime: planData.estimatedTime,
+      recomendations: planData.recomendations,
+      address: planData.address,
+      image: planData.image,
+      userId: planData.userId,
     };
-        router.push("/plans");
-    }
-    catch (err) {
-        console.log(err);
-    }
 
+    await crearPlan(planToSubmit);
+
+    router.push("/plans");
+    router.refresh();
+  } catch (err) {
+    console.error("Error al crear el plan:", err);
   }
+}
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-8 mt-10 w-full max-w-md">
         <label htmlFor="name" className="block text-sm font-semibold text-slate-700">
@@ -171,6 +174,7 @@ export default function CreatePlanForm({ postToEdit }: CreatePlanFormProps) {
           required
           className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 mt-1 outline-none"
         />
+        
         <button type="submit" className="w-full bg-blue-700 text-white font-semibold rounded-xl py-4 mt-6">
           Crear Plan
         </button>
